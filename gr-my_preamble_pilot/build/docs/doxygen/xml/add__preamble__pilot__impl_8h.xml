@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="add__preamble__pilot__impl_8h" kind="file">
+    <compoundname>add_preamble_pilot_impl.h</compoundname>
+    <includes refid="add__preamble__pilot_8h" local="no">my_preamble_pilot/add_preamble_pilot.h</includes>
+    <incdepgraph>
+      <node id="8">
+        <label>my_preamble_pilot/api.h</label>
+        <link refid="api_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>gnuradio/attributes.h</label>
+      </node>
+      <node id="7">
+        <label>my_preamble_pilot/add_preamble_pilot.h</label>
+        <link refid="add__preamble__pilot_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>gnuradio/block.h</label>
+      </node>
+      <node id="6">
+        <label>add_preamble_pilot_impl.h</label>
+        <link refid="add_preamble_pilot_impl.h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl" prot="public">gr::my_preamble_pilot::add_preamble_pilot_impl</innerclass>
+    <innernamespace refid="namespacegr">gr</innernamespace>
+    <innernamespace refid="namespacegr_1_1my__preamble__pilot">gr::my_preamble_pilot</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h"/>
+  </compounddef>
+</doxygen>

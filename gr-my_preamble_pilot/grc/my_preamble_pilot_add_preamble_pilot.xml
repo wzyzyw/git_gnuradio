@@ -1,0 +1,20 @@
+<block>
+  <name>Add preamble pilot</name>
+  <key>my_preamble_pilot_add_preamble_pilot</key>
+  <category>[MY_PREAMBLE_PILOT]</category>
+  <import>import my_preamble_pilot</import>
+  <make>my_preamble_pilot.add_preamble_pilot($frame_width)</make>
+  <param>
+    <name>Frame_width</name>
+    <key>frame_width</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+</block>

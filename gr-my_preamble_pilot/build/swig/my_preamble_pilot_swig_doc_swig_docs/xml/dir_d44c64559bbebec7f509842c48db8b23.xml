@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="dir_d44c64559bbebec7f509842c48db8b23" kind="dir">
+    <compoundname>/home/wzy/gr-my_preamble_pilot/include</compoundname>
+    <innerdir refid="dir_0c1bb54720fe246e208d32e2b2ce0bcb">/home/wzy/gr-my_preamble_pilot/include/my_preamble_pilot</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/wzy/gr-my_preamble_pilot/include/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG    CMakeFiles/_my_preamble_pilot_swig_doc_tag.dir/_my_preamble_pilot_swig_doc_tag.cpp.o  -o _my_preamble_pilot_swig_doc_tag -rdynamic 

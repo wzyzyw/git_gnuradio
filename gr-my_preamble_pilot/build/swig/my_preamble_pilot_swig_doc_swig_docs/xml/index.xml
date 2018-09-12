@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.6">
+  <compound refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot" kind="class"><name>gr::my_preamble_pilot::add_preamble_pilot</name>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot_1ae5a9949989388e023bb3830b8804aceb" kind="typedef"><name>sptr</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot_1ac56df8f5607bdf23aca1a54d83a88f42" kind="function"><name>make</name></member>
+  </compound>
+  <compound refid="namespacegr" kind="namespace"><name>gr</name>
+  </compound>
+  <compound refid="namespacegr_1_1my__preamble__pilot" kind="namespace"><name>gr::my_preamble_pilot</name>
+  </compound>
+  <compound refid="namespacestd" kind="namespace"><name>std</name>
+  </compound>
+  <compound refid="add__preamble__pilot_8h" kind="file"><name>add_preamble_pilot.h</name>
+  </compound>
+  <compound refid="api_8h" kind="file"><name>api.h</name>
+    <member refid="api_8h_1a72ed861f107658cd53e56b562c2220bf" kind="define"><name>MY_PREAMBLE_PILOT_API</name></member>
+  </compound>
+  <compound refid="dir_d44c64559bbebec7f509842c48db8b23" kind="dir"><name>/home/wzy/gr-my_preamble_pilot/include</name>
+  </compound>
+  <compound refid="dir_0c1bb54720fe246e208d32e2b2ce0bcb" kind="dir"><name>/home/wzy/gr-my_preamble_pilot/include/my_preamble_pilot</name>
+  </compound>
+</doxygenindex>

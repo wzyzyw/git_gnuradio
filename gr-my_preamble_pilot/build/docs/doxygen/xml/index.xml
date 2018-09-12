@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.6">
+  <compound refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot" kind="class"><name>gr::my_preamble_pilot::add_preamble_pilot</name>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot_1ae5a9949989388e023bb3830b8804aceb" kind="typedef"><name>sptr</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot_1ac56df8f5607bdf23aca1a54d83a88f42" kind="function"><name>make</name></member>
+  </compound>
+  <compound refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl" kind="class"><name>gr::my_preamble_pilot::add_preamble_pilot_impl</name>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a4b417af1b165b68c8649a1b03642ba74" kind="variable"><name>pilot_length</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ab6a43b19c2335f03e47d413134bd1186" kind="variable"><name>pilot_symbol</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ac1b4ad4e8086ddb7a2fd996ba01b5ad8" kind="variable"><name>pilots_sent</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1aa8fad336db0c96daabe0e4a622c536d7" kind="variable"><name>symbol_length</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1adea1abe569308643f8ad1ecf66109331" kind="variable"><name>symbol_sent</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a3de50b7a0a9c2bb0c5ec743f9b33b170" kind="variable"><name>state</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ac672440e5446e9ca3c42471aa1e88332" kind="variable"><name>preamble_length</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a567b41af39a480b2fe5a3bbfb23df499" kind="variable"><name>preamble</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a96a23a5cbe8bc1b131211f59806e559b" kind="variable"><name>preamble_sent</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a9e4ae89721292b6d30a91c2ccd1c37f2" kind="function"><name>send_pilot</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ac61ea778c66405c7dce95e87af38f7f2" kind="function"><name>send_preamble</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a9db170500d181ed9eba0fe1268510af2" kind="function"><name>add_preamble_pilot_impl</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a5345e58d44c77d5428a0be732d410bf5" kind="function"><name>~add_preamble_pilot_impl</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ade558f9410caa837caa383501954b7f6" kind="function"><name>forecast</name></member>
+    <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ae3f18bb72eea386324bf3d0773139267" kind="function"><name>general_work</name></member>
+  </compound>
+  <compound refid="namespacegr" kind="namespace"><name>gr</name>
+  </compound>
+  <compound refid="namespacegr_1_1my__preamble__pilot" kind="namespace"><name>gr::my_preamble_pilot</name>
+  </compound>
+  <compound refid="namespacestd" kind="namespace"><name>std</name>
+  </compound>
+  <compound refid="add__preamble__pilot_8h" kind="file"><name>add_preamble_pilot.h</name>
+  </compound>
+  <compound refid="add__preamble__pilot__impl_8h" kind="file"><name>add_preamble_pilot_impl.h</name>
+  </compound>
+  <compound refid="api_8h" kind="file"><name>api.h</name>
+    <member refid="api_8h_1a72ed861f107658cd53e56b562c2220bf" kind="define"><name>MY_PREAMBLE_PILOT_API</name></member>
+  </compound>
+  <compound refid="group__defs_8dox" kind="file"><name>group_defs.dox</name>
+  </compound>
+  <compound refid="main__page_8dox" kind="file"><name>main_page.dox</name>
+  </compound>
+  <compound refid="group__block" kind="group"><name>block</name>
+  </compound>
+  <compound refid="dir_d44c64559bbebec7f509842c48db8b23" kind="dir"><name>include</name>
+  </compound>
+  <compound refid="dir_97aefd0d527b934f1d99a682da8fe6a9" kind="dir"><name>lib</name>
+  </compound>
+  <compound refid="dir_0c1bb54720fe246e208d32e2b2ce0bcb" kind="dir"><name>my_preamble_pilot</name>
+  </compound>
+  <compound refid="indexpage" kind="page"><name>index</name>
+  </compound>
+</doxygenindex>

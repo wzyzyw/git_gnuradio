@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <compounddef id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl" kind="class" prot="public">
+    <compoundname>gr::my_preamble_pilot::add_preamble_pilot_impl</compoundname>
+    <basecompoundref refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot" prot="public" virt="non-virtual">gr::my_preamble_pilot::add_preamble_pilot</basecompoundref>
+    <includes refid="add__preamble__pilot__impl_8h" local="no">add_preamble_pilot_impl.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a4b417af1b165b68c8649a1b03642ba74" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int gr::my_preamble_pilot::add_preamble_pilot_impl::pilot_length</definition>
+        <argsstring></argsstring>
+        <name>pilot_length</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="33" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ab6a43b19c2335f03e47d413134bd1186" prot="private" static="no" mutable="no">
+        <type>gr_complex</type>
+        <definition>gr_complex gr::my_preamble_pilot::add_preamble_pilot_impl::pilot_symbol[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>pilot_symbol</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="34" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ac1b4ad4e8086ddb7a2fd996ba01b5ad8" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int gr::my_preamble_pilot::add_preamble_pilot_impl::pilots_sent</definition>
+        <argsstring></argsstring>
+        <name>pilots_sent</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="35" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1aa8fad336db0c96daabe0e4a622c536d7" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int gr::my_preamble_pilot::add_preamble_pilot_impl::symbol_length</definition>
+        <argsstring></argsstring>
+        <name>symbol_length</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="36" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1adea1abe569308643f8ad1ecf66109331" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int gr::my_preamble_pilot::add_preamble_pilot_impl::symbol_sent</definition>
+        <argsstring></argsstring>
+        <name>symbol_sent</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="37" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a3de50b7a0a9c2bb0c5ec743f9b33b170" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int gr::my_preamble_pilot::add_preamble_pilot_impl::state</definition>
+        <argsstring></argsstring>
+        <name>state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="38" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ac672440e5446e9ca3c42471aa1e88332" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int gr::my_preamble_pilot::add_preamble_pilot_impl::preamble_length</definition>
+        <argsstring></argsstring>
+        <name>preamble_length</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="39" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a567b41af39a480b2fe5a3bbfb23df499" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int gr::my_preamble_pilot::add_preamble_pilot_impl::preamble[64]</definition>
+        <argsstring>[64]</argsstring>
+        <name>preamble</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="40" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a96a23a5cbe8bc1b131211f59806e559b" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int gr::my_preamble_pilot::add_preamble_pilot_impl::preamble_sent</definition>
+        <argsstring></argsstring>
+        <name>preamble_sent</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="41" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a9e4ae89721292b6d30a91c2ccd1c37f2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void gr::my_preamble_pilot::add_preamble_pilot_impl::send_pilot</definition>
+        <argsstring>(int &amp;generated_outputs, const int noutput_items, gr_complex *out)</argsstring>
+        <name>send_pilot</name>
+        <param>
+          <type>int &amp;</type>
+          <declname>generated_outputs</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>noutput_items</declname>
+        </param>
+        <param>
+          <type>gr_complex *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="44" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ac61ea778c66405c7dce95e87af38f7f2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void gr::my_preamble_pilot::add_preamble_pilot_impl::send_preamble</definition>
+        <argsstring>(int &amp;generated_outputs, const int noutput_items, gr_complex *out)</argsstring>
+        <name>send_preamble</name>
+        <param>
+          <type>int &amp;</type>
+          <declname>generated_outputs</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>noutput_items</declname>
+        </param>
+        <param>
+          <type>gr_complex *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="46" column="1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a9db170500d181ed9eba0fe1268510af2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>gr::my_preamble_pilot::add_preamble_pilot_impl::add_preamble_pilot_impl</definition>
+        <argsstring>(int frame_width)</argsstring>
+        <name>add_preamble_pilot_impl</name>
+        <param>
+          <type>int</type>
+          <declname>frame_width</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="50" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a5345e58d44c77d5428a0be732d410bf5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>gr::my_preamble_pilot::add_preamble_pilot_impl::~add_preamble_pilot_impl</definition>
+        <argsstring>()</argsstring>
+        <name>~add_preamble_pilot_impl</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="51" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ade558f9410caa837caa383501954b7f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void gr::my_preamble_pilot::add_preamble_pilot_impl::forecast</definition>
+        <argsstring>(int noutput_items, gr_vector_int &amp;ninput_items_required)</argsstring>
+        <name>forecast</name>
+        <param>
+          <type>int</type>
+          <declname>noutput_items</declname>
+        </param>
+        <param>
+          <type>gr_vector_int &amp;</type>
+          <declname>ninput_items_required</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="54" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ae3f18bb72eea386324bf3d0773139267" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int gr::my_preamble_pilot::add_preamble_pilot_impl::general_work</definition>
+        <argsstring>(int noutput_items, gr_vector_int &amp;ninput_items, gr_vector_const_void_star &amp;input_items, gr_vector_void_star &amp;output_items)</argsstring>
+        <name>general_work</name>
+        <param>
+          <type>int</type>
+          <declname>noutput_items</declname>
+        </param>
+        <param>
+          <type>gr_vector_int &amp;</type>
+          <declname>ninput_items</declname>
+        </param>
+        <param>
+          <type>gr_vector_const_void_star &amp;</type>
+          <declname>input_items</declname>
+        </param>
+        <param>
+          <type>gr_vector_void_star &amp;</type>
+          <declname>output_items</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="56" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="6">
+        <label>gr::my_preamble_pilot::add_preamble_pilot</label>
+        <link refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>gr::my_preamble_pilot::add_preamble_pilot_impl</label>
+        <link refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>gr::block</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="9">
+        <label>gr::my_preamble_pilot::add_preamble_pilot</label>
+        <link refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>gr::my_preamble_pilot::add_preamble_pilot_impl</label>
+        <link refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>gr::block</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" line="30" column="1" bodyfile="/home/wzy/gr-my_preamble_pilot/lib/add_preamble_pilot_impl.h" bodystart="29" bodyend="60"/>
+    <listofallmembers>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a9db170500d181ed9eba0fe1268510af2" prot="public" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>add_preamble_pilot_impl</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ade558f9410caa837caa383501954b7f6" prot="public" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>forecast</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ae3f18bb72eea386324bf3d0773139267" prot="public" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>general_work</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot_1ac56df8f5607bdf23aca1a54d83a88f42" prot="public" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>make</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a4b417af1b165b68c8649a1b03642ba74" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>pilot_length</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ab6a43b19c2335f03e47d413134bd1186" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>pilot_symbol</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ac1b4ad4e8086ddb7a2fd996ba01b5ad8" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>pilots_sent</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a567b41af39a480b2fe5a3bbfb23df499" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>preamble</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ac672440e5446e9ca3c42471aa1e88332" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>preamble_length</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a96a23a5cbe8bc1b131211f59806e559b" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>preamble_sent</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a9e4ae89721292b6d30a91c2ccd1c37f2" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>send_pilot</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1ac61ea778c66405c7dce95e87af38f7f2" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>send_preamble</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot_1ae5a9949989388e023bb3830b8804aceb" prot="public" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>sptr</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a3de50b7a0a9c2bb0c5ec743f9b33b170" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>state</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1aa8fad336db0c96daabe0e4a622c536d7" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>symbol_length</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1adea1abe569308643f8ad1ecf66109331" prot="private" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>symbol_sent</name></member>
+      <member refid="classgr_1_1my__preamble__pilot_1_1add__preamble__pilot__impl_1a5345e58d44c77d5428a0be732d410bf5" prot="public" virt="non-virtual"><scope>gr::my_preamble_pilot::add_preamble_pilot_impl</scope><name>~add_preamble_pilot_impl</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

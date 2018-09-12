@@ -1,0 +1,12 @@
+/home/wzy/gr-my_preamble_pilot/build/swig/CMakeFiles/_my_preamble_pilot_swig.dir
+/home/wzy/gr-my_preamble_pilot/build/swig/CMakeFiles/_my_preamble_pilot_swig_doc_tag.dir
+/home/wzy/gr-my_preamble_pilot/build/swig/CMakeFiles/_my_preamble_pilot_swig_swig_tag.dir
+/home/wzy/gr-my_preamble_pilot/build/docs/doxygen/CMakeFiles/doxygen_target.dir
+/home/wzy/gr-my_preamble_pilot/build/lib/CMakeFiles/gnuradio-my_preamble_pilot.dir
+/home/wzy/gr-my_preamble_pilot/build/swig/CMakeFiles/my_preamble_pilot_swig_swig_2d0df.dir
+/home/wzy/gr-my_preamble_pilot/build/swig/CMakeFiles/my_preamble_pilot_swig_swig_doc.dir
+/home/wzy/gr-my_preamble_pilot/build/apps/CMakeFiles/pygen_apps_9a6dd.dir
+/home/wzy/gr-my_preamble_pilot/build/python/CMakeFiles/pygen_python_16fcc.dir
+/home/wzy/gr-my_preamble_pilot/build/swig/CMakeFiles/pygen_swig_ca6f9.dir
+/home/wzy/gr-my_preamble_pilot/build/lib/CMakeFiles/test-my_preamble_pilot.dir
+/home/wzy/gr-my_preamble_pilot/build/CMakeFiles/uninstall.dir

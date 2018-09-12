@@ -1,0 +1,31 @@
+<block>
+  <name>My preamble detector</name>
+  <key>my_preamble_pilot_my_preamble_detector</key>
+  <category>[MY_PREAMBLE_PILOT]</category>
+  <import>import my_preamble_pilot</import>
+  <make>my_preamble_pilot.my_preamble_detector($frame_width)</make>
+  <param>
+    <name>Frame_width</name>
+    <key>frame_width</key>
+    <type>int</type>
+  </param>
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <vlen>1</vlen>
+  </sink>
+  <sink>
+    <name>corr</name>
+    <type>complex</type>
+    <vlen>1</vlen>
+  </sink>
+  <sink>
+    <name>threshold</name>
+    <type>float</type>
+    <vlen>1</vlen>
+  </sink>
+  <source>
+    <name>out</name>
+    <type>complex</type>
+  </source>
+</block>
