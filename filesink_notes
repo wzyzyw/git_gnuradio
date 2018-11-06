@@ -1,0 +1,40 @@
+1.work（）
+for(nwritten = 0; nwritten < noutput_items; nwritten++) {
+	for(int chan = 0; chan < d_nchans; chan++) {
+	  // Write zeros to channels which are in the WAV file
+	  // but don't have any inputs here
+	  if(chan < n_in_chans) {
+	    sample_buf_s =
+	      convert_to_short(in[chan][nwritten]);
+	  }
+	  else {
+	    sample_buf_s = 0;
+	  }
+
+	  wav_write_sample(d_fp, sample_buf_s, d_bytes_per_sample);
+
+在work函数中，首先将第一个输入端的第一个输入值写入文件中，然后是第二个输入端的第一个输入值，当所有输入端的第一个值全部写入后，从第一个输入端开始，
+写入第二个输入值不断循环。在写入之前，将float转换为short int。
+2.wav_write_sample
+根据头文件，找到了wav_write_sample函数的定义如下：可以确定输入写入的数据从short int转为char
+void
+    wav_write_sample(FILE *fp, short int sample, int bytes_per_sample)
+    {
+      void *data_ptr;
+      unsigned char buf_8bit;
+      int16_t       buf_16bit;
+
+      if(bytes_per_sample == 1) {
+	buf_8bit = (unsigned char)sample;
+	data_ptr = (void*)&buf_8bit;
+      }
+      else {
+	buf_16bit = host_to_wav((int16_t) sample);
+	data_ptr  = (void *) &buf_16bit;
+      }
+
+      fwrite(data_ptr, 1, bytes_per_sample, fp);
+    }
+
+3.convert_to_short转换函数
+参数bits per synbols的意义应该是每输入一个浮点数用8bits的int还是16bits的int表示，
