@@ -1,0 +1,40 @@
+1.usrp_source.py
+ self.usrp0 = uhd.usrp_source，原有的uhd对象作为新类的成员变量，添加了GPS pps检测的程序，保证gps时钟的锁定。
+2.keep_one_in_n_impl.cc
+ memcpy (out+count*d_item_size, in+count*d_item_size*d_n, d_item_size);		// copy 1 item
+ 相当于将输入items进行d_n倍下采样，并调整标签的位置，输入参数（输入采样率是用来调整具体的标签位置）。
+3.time_file_sink
+ int count = fwrite (in, d_itemsize, n_itmes, d_handle);
+        if(count == 0) 
+            if(ferror(d_handle)) 
+                perror("timed_file_sink: error writing file");
+        d_count += count;
+        if (d_count >= d_packet_len)
+        {
+            fclose(d_handle);
+            d_count = 0;
+        }
+  每一包数据保存到一个文件中，文件名通过数据帧到达时间区别。文件保存模块自己写，但发送端使用的文件是gnu自带的filesource。
+4.burst_trigger_impl
+ 从标签六中逐个读取标签，如果标签是时间标签，得到时间及其偏移，并将找到时间标记为真，同理找到采样率标签；
+  if (d_tags_itr->key == TIME_KEY),if (d_tags_itr->key == RATE_KEY),两个标签都找到，如果know_time为假，在都找到采样率标签和时间标签后know_time时间标记量变为真，通过计算burst_time
+  和pass_time得到tx_time并以消息的形式传递到下个端口；一旦know_time为真，直接根据时间标签的offset得到tx_time；只要know_time为真模块将tx_time以消息形式发送给下个模块，直到总的数据包发送完；
+5.burst_gate_impl.cc
+  if((d_count==0) && (!d_msg_queue.empty()))
+     d_in_busrt = true;
+  if(d_in_busrt)
+  memcpy(out, in, d_itemsize*n_itmes);
+  d_count用于记录一个数据包里发送了多少数据，当
+  if(d_count>=d_packet_len)
+            {
+                d_count = 0;
+                d_in_busrt = false;
+                add_item_tag(0, nitems_written(0)+n_itmes-1, EOB_KEY, pmt::PMT_T, d_srcid);
+            }
+  4和5 burst相当于发送一个数据包的使能信号，4提供具体的发送时间，具体burst time 和pass time tx time的关系还不清楚；
+6.usrp_sink.py
+  self.usrp0 = uhd.usrp_sink
+7.LFRX.GRC
+ 同步时钟锁定后，接收数据复数转实数，n倍下采样，浮点转short，按packet保存到文件中。
+8.random_IQ_generator产生的数据是LFTX_test使用的数据；
+9.item理解：item是一个统一的变量计数方式，一个整形可以视为一个item，一个向量也可以视为item，便于描述的简洁。
