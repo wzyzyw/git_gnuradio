@@ -38,3 +38,9 @@
  同步时钟锁定后，接收数据复数转实数，n倍下采样，浮点转short，按packet保存到文件中。
 8.random_IQ_generator产生的数据是LFTX_test使用的数据；
 9.item理解：item是一个统一的变量计数方式，一个整形可以视为一个item，一个向量也可以视为item，便于描述的简洁。
+10.数据类型转化
+  （1）volk_32fc_deinterleave_real_32f 获取复数的实部；即模块complex_to_real的作用。
+  (2)https://wiki.gnuradio.org/index.php/Volk,volk 最优矢量库
+  (3)复数转实数，增加了处理的复杂度，但不会影响结果，但是float转short精度损失怎么办？
+  （4）具体数据处理过错未知，具体的数据帧格式未知；
+  （5）packlet—len
