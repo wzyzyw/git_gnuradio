@@ -1,0 +1,188 @@
+import torch
+from torch import nn
+from torch.autograd import Variable
+import scipy.io as sio
+import numpy as np
+np.set_printoptions(threshold=np.inf)
+import matplotlib.pyplot as plt
+
+
+#定义RNN模型
+class Rnn(nn.Module):
+    def __init__(self,INPUT_SIZE,HIDDEN_SIZE,OUTPUT_SIZE):
+        super(Rnn, self).__init__()
+        self.rnn=nn.RNN(input_size=INPUT_SIZE,hidden_size=HIDDEN_SIZE,num_layers=1,batch_first=True)
+        self.out=nn.Linear(HIDDEN_SIZE,OUTPUT_SIZE)#linear是线性变换层,指定网络输入、输出维度
+    #foreard定义了模型的输入和输出和数据在模型中的流动方向
+    def forward(self,x,h_state):
+        r_out, h_state = self.rnn(x, h_state)
+        outs = []
+        for time in range(r_out.size(1)):
+            outs.append(self.out(r_out[:, time, :]))
+        return torch.stack(outs, dim=1), h_state
+
+
+def read_data():
+    tmp_tx_r=sio.loadmat('in_r.mat')
+    tx_r=tmp_tx_r['in_r']
+    tmp_tx_i=sio.loadmat('in_i.mat')
+    tx_i=tmp_tx_i['in_i']
+    return np.array(tx_r), np.array(tx_i)
+
+
+#模型参数
+INPUT_SIZE = 4
+HIDDEN_SIZE = 64
+OUTPUT_SIZE = 2
+TIME_STEP = 4
+LR = 0.002
+EPOCH=1
+flag=0
+#创建模型
+model1 = Rnn(INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE)
+print(model1)
+model2 = Rnn(INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE)
+#定义优化器和损失函数
+loss_func = nn.MSELoss()
+optimizer1 = torch.optim.Adam(model1.parameters(), lr=LR)
+optimizer2 = torch.optim.Adam(model2.parameters(), lr=LR)
+#读取数据
+frame_len=2048
+train_num=560
+tx_r,tx_i=read_data()
+rx_data_r=[]
+rx_data_i=[]
+
+with open('all_rx_data2_r.txt','r') as f_rx_data_r:
+    line=f_rx_data_r.readline()
+    line=line[:-1]
+    while line:
+        rx_data_r.append(line)
+        line = f_rx_data_r.readline()
+        line = line[:-1]
+with open('all_rx_data2_i.txt','r') as f_rx_data_i:
+    line=f_rx_data_i.readline()
+    line=line[:-1]
+    while line:
+        rx_data_i.append(line)
+        line = f_rx_data_i.readline()
+        line = line[:-1]
+
+rx_data_r=np.array(rx_data_r).astype(float)
+rx_data_r=np.transpose([rx_data_r])
+rx_data_i=np.array(rx_data_i).astype(float)
+rx_data_i=np.transpose([rx_data_i])
+index=240
+trunc_rx_data_r=rx_data_r[frame_len*index:(index+1)*frame_len]
+trunc_rx_data_i=rx_data_i[frame_len*index:(index+1)*frame_len]
+rx_r=trunc_rx_data_r
+rx_i=trunc_rx_data_i
+#训练数据输入4
+if flag==0:
+    train_in1= rx_r[0:train_num:2]
+    train_in2=rx_i[0:train_num:2]
+    train_in3= rx_r[1:train_num:2]
+    train_in4=rx_i[1:train_num:2]
+    x_np=np.concatenate((train_in1,train_in2,train_in3,train_in4),axis=1)
+if flag==1:
+    print(flag)
+#训练数据输出2
+train_out1=tx_r[0:train_num:2]
+train_out2=tx_i[0:train_num:2]
+train_out3=tx_r[1:train_num:2]
+train_out4=tx_i[1:train_num:2]
+y1_np=np.concatenate([train_out1,train_out2],axis=1)
+y2_np=np.concatenate([train_out3,train_out4],axis=1)
+#测试数据输入4
+if flag==0:
+    test_in1=rx_r[train_num:-1:2]
+    test_in2=rx_i[train_num:-1:2]
+    test_in3=rx_r[train_num+1:frame_len:2]
+    test_in4=rx_i[train_num+1:frame_len:2]
+    test_x_np=np.concatenate((test_in1,test_in2,test_in3,test_in4),axis=1)
+if flag==1:
+        test_in1=trunc_rx_data_r[0:frame_len:2]
+        test_in2=trunc_rx_data_i[0:frame_len:2]
+        test_in3=trunc_rx_data_r[1:frame_len:2]
+        test_in4=trunc_rx_data_i[1:frame_len:2]
+        test_x_np=np.concatenate((test_in1,test_in2,test_in3,test_in4),axis=1)
+#测试结果对比数据
+if flag==0:
+    out = tx_r[train_num:frame_len]
+if float==1:
+    out=tx_r
+
+h_state1 = None # 第一次的时候，暂存为0，初次传入RNN的隐藏层状态
+h_state2=None
+for epoch in range(EPOCH):
+    #模型训练
+    for idx in range(int(train_num/2)):
+        tmp_x_np=x_np[idx,:]
+        x = Variable(torch.Tensor(tmp_x_np).type(torch.FloatTensor))
+        x=x.view(1,1,4)
+        tmp_y1_np=y1_np[idx,:]
+        y1=Variable(torch.Tensor(tmp_y1_np).type(torch.FloatTensor))
+        y1=y1.view(1,1,2)
+        tmp_y2_np = y2_np[idx, :]
+        y2 = Variable(torch.Tensor(tmp_y2_np).type(torch.FloatTensor))
+        y2 = y2.view(1, 1, 2)
+        prediction1, h_state1 = model1(x, h_state1)
+        h_state1 = h_state1.data
+        loss1 = loss_func(prediction1, y1)
+        optimizer1.zero_grad()
+        loss1.backward()
+        optimizer1.step()
+        prediction2, h_state2 = model2(x, h_state2)
+        h_state2 = h_state2.data
+        loss2 = loss_func(prediction2, y2)
+        optimizer2.zero_grad()
+        loss2.backward()
+        optimizer2.step()
+        print('Epoch: ', epoch, '|idx:',idx, '| train loss1: %.4f' % loss1, '| train loss2: %.4f' % loss2)
+        #print(loss1[0])
+        #print(loss2[0])
+
+    #模型测试
+    model1_out_r=[]
+    model1_out_i=[]
+    model2_out_r=[]
+    model2_out_i=[]
+    if flag==0:
+        test_len=int((frame_len - train_num) / 2)
+    if flag==1:
+        test_len=int(frame_len/2)
+    for idx in range(test_len):
+        tmp_test_x=test_x_np[idx,:]
+        test_in=Variable(torch.Tensor(tmp_test_x).type(torch.FloatTensor))
+        test_in=test_in.view(1,1,4)
+        test_out1, h_state1 = model1(test_in, h_state1)
+        tmp_out=test_out1.data.numpy()
+        model1_out_r.append(tmp_out[0,0,0])
+        model1_out_i.append(tmp_out[0, 0, 1])
+        test_out2, h_state2 = model2(test_in, h_state2)
+        tmp_out = test_out2.data.numpy()
+        model2_out_r.append(tmp_out[0,0,0])
+        model2_out_i.append(tmp_out[0, 0, 1])
+    model_out_r=np.zeros(test_len*2)
+    model_out_r[0:test_len*2:2]=np.array(model1_out_r)
+    model_out_r[1:test_len*2:2] = np.array(model2_out_r)
+    model_out_r=np.transpose([model_out_r])
+    plt.figure(1)
+    plt.plot(model_out_r, np.zeros([len(model_out_r), 1]), '*')
+    plt.title('alamouti decode constellation')
+    plt.xlabel('real')
+    plt.ylabel('imag')
+    plt.figure(2)
+    plt.plot(trunc_rx_data_r, trunc_rx_data_i, '*')
+    plt.title('RNN input constellation')
+    plt.xlabel('real')
+    plt.ylabel('imag')
+    plt.show()
+    tmp_model_out_r=np.array(model_out_r>0).astype(int)#bool转换为数值
+    model_out_r=tmp_model_out_r*2-1
+    error=0
+    for idx in range(len(out)):
+        if out[idx]!=model_out_r[idx]:
+            error += 1
+    ber=error*1.0/len(out)
+    print('all bits=',len(out),'|error bits=',error,'| ber=',ber)
