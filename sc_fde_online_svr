@@ -1,0 +1,308 @@
+clear all; close all;
+Fs=2400;%Hz 使用stdchan函数时，如果是基带信号，则采样率不能太高。
+ts=1/Fs;
+fc=Fs/5;%Hz
+sps=8;
+Rb=Fs/sps;%2000bits/s
+Bw=3000;%Hz
+%多径数
+L=2;
+Nfft=128;  Ng=16;  Nofdm=Nfft+Ng; 
+
+% frame_len=3*Nofdm;%一帧数据3个ofdm符号
+frame_num=120;
+Nd=Nfft; % Pilot spacing, Numbers of pilots and data per OFDM symbol
+Nsym=Nd*frame_num;%总的qpsk符号数
+
+bps=2; M=2^bps; % Number of bits per (modulated) symbol
+hMod = comm.QPSKModulator('BitInput',true);%default:pi/4,gray map
+hDemod = comm.QPSKDemodulator('BitOutput',true);
+% pilot_symbol=chu_sequence(Np);%每个ofdm符号都是相同的pilot
+% % pilot_symbol=gold_sequence(Np);
+
+
+rand('seed',10); 
+msgint=randint(bps*Nsym,1); %比特数据源
+Data=step(hMod,msgint);
+%alamouti encode
+[encode1,encode2]=sc_stbc(Data,Nd,frame_num);
+%add (CP)
+tx1_tmp = [encode1(Nfft-Ng+1:Nfft,:);encode1];
+tx2_tmp = [encode2(Nfft-Ng+1:Nfft,:);encode2];
+
+
+%add UW
+pilot_len=32;
+M_chu=3;
+epsilon=Ng;
+
+pilot_symbols1=chu_sequence(pilot_len,M_chu);
+pilot_symbols2=circshift(pilot_symbols1,epsilon);
+tx_pilot1=[pilot_symbols1(pilot_len-Ng+1:pilot_len);pilot_symbols1;pilot_symbols1(1:Ng)];
+tx_pilot2=[pilot_symbols2(pilot_len-Ng+1:pilot_len);pilot_symbols2;pilot_symbols2(1:Ng)];
+pilot_2Ng_len=length(tx_pilot1);
+
+Nps=8; %实际插入导频时，真正的间隔，用于确定导频位置
+period=Nps+1;%每Nps个数据块加上一个导频块,构成一个数据周期
+
+flag=2;
+if flag==0
+    Np=frame_num/Nps;%不考虑插值，不加1，考虑插值后面再加1
+end
+if flag==1
+    Np=frame_num/Nps+1;%考虑插值后面再加1 
+end
+if flag==2%在线学习插值
+    Np=frame_num/Nps;%不加1
+    pre_train_num=20;
+    pre_train_pilot1=repmat(tx_pilot1,pre_train_num,1);
+    pre_train_pilot2=repmat(tx_pilot2,pre_train_num,1);
+end
+all_blocks=frame_num+Np;
+
+
+idx=1;
+ip=0;
+tx1=[];
+tx2=[];
+pilot_loc=[];
+data_loc=[];
+%add
+while idx<=all_blocks
+    if mod(idx,period)==1
+        tx1=[tx1;tx_pilot1];
+        tx2=[tx2;tx_pilot2];
+        idx=idx+1;
+        ip=ip+1;
+        pilot_loc=[pilot_loc;idx];
+    else
+        tx1=[tx1;tx1_tmp(:,idx-ip)];
+        tx2=[tx2;tx2_tmp(:,idx-ip)];
+        idx=idx+1;
+        data_loc=[data_loc;idx];
+    end
+end
+
+%channel
+% [h1,h2]=channel(Nd,all_ofdm,Ng);
+[h1,h2]=hf_stbc_chan(ts,'iturHFMM');
+
+% count=4;
+% idx=1;
+% while idx<=all_blocks
+% h1_tmp = (1/sqrt(2)*[randn(1,h_len) + 1j*randn(1,h_len)]);
+% h1(:,idx:idx+count-1)=kron(ones(1,count),h1_tmp.');
+% h2_tmp = (1/sqrt(2)*[randn(1,h_len) + 1j*randn(1,h_len)]);
+% h2(:,idx:idx+count-1)=kron(ones(1,count),h2_tmp.');
+% idx=idx+count;
+% end
+frame_len=Nofdm*frame_num+pilot_2Ng_len*Np;
+
+implus=dirac(0:2-1);
+implus(1)=1; 
+SNRs = [0:2:40];
+BERs=zeros(1,length(SNRs));
+if flag==2
+    pre_rx_pilot_tmp=filter(h1,pre_train_pilot1)+filter(h2,pre_train_pilot2);
+end
+% rx_tmp=tx1+tx2;
+rx_tmp=filter(h1,tx1)+filter(h2,tx2);
+for i=1:length(SNRs)
+   SNR = SNRs(i); 
+   if flag==2
+        pre_rx_pilot= pre_rx_pilot_tmp;
+        pre_rx_pilot=awgn(pre_rx_pilot,SNR,'measured');
+   end
+   rx=rx_tmp;
+   rx=awgn(rx,SNR,'measured');
+%    rx=[];
+% for idx=1:all_blocks
+% %     rx_tmp=filter(h1(:,idx),1,tx1(:,idx))+filter(h2(:,idx),1,tx2(:,idx));
+% %     rx_tmp=filter(h1,1,tx1(:,idx))+filter(h2,1,tx2(:,idx));
+% %     rx_tmp=conv(h1,tx1(:,idx))+conv(h2,tx2(:,idx));
+%     hf1=filter(h1,implus);
+%     hf2=filter(h2,implus);
+% %     rx_tmp=tx1(:,idx)+tx2(:,idx);
+%     rx_tmp=filter(hf1,1,tx1(:,idx))+filter(hf2,1,tx2(:,idx));
+% %     rx_tmp=filter(h1,tx1(:,idx))+filter(h2,tx2(:,idx));
+%     rx_tmp=awgn(rx_tmp,SNR,'measured');
+%     rx=[rx;rx_tmp];
+% end
+
+   %S->P
+   
+   idx=1;
+   rx_pilot=[];
+   rx_data=[];
+   while idx<=frame_len
+       start_pilot=idx;
+       end_pilot=start_pilot+pilot_2Ng_len-1;
+       start_data=end_pilot+1;
+       end_data=start_data+Nofdm*Nps-1;
+       rx_pilot=[rx_pilot;rx(start_pilot:end_pilot)];
+       if end_pilot==frame_len
+           break;
+       end
+       rx_data=[rx_data;rx(start_data:end_data)];
+       idx=end_data+1;
+   end
+   rx_pilot=reshape(rx_pilot,pilot_2Ng_len,Np);
+   rx_data=reshape(rx_data,Nofdm,frame_num);
+   %remove cp
+   rx_data_rcp=rx_data(Ng+1:Nofdm,:); 
+   %plot( rx_data_rcp(:),'r*');
+   rx_pilot_rcp=rx_pilot(Ng+1:end,:);
+   %数据块fft变为频域
+   Rx=fft(rx_data_rcp,Nfft,1);
+  
+   %导频块进行时域信道估计
+   %如果选择在线学习预测，对Online SVR 进行预训练
+   if flag==2
+       pre_rx_pilot=reshape(pre_rx_pilot,pilot_2Ng_len,pre_train_num);
+       pre_rx_pilot_rcp=pre_rx_pilot(Ng+1:end,:);
+       pre_h1_est=zeros(Ng,pre_train_num);
+       pre_h2_est=zeros(Ng,pre_train_num);
+       for idx=1:pre_train_num
+            pre_tmp_pilot=pre_rx_pilot_rcp(:,idx);
+            pre_tmp=[];
+            for iter=1:Ng
+                pre_tmp=[pre_tmp; pre_tmp_pilot(iter:iter+pilot_len-1).'];
+            end
+            pre_tmp1=pre_tmp*conj(pilot_symbols1);
+            pre_tmp2=pre_tmp*conj(pilot_symbols2);
+            pre_h1_est(:,idx)=pre_tmp1;
+            pre_h2_est(:,idx)=pre_tmp2;
+       end
+       pre_h1_est=pre_h1_est/pilot_len;
+       pre_h2_est=pre_h2_est/pilot_len;
+       for idx=1:Ng
+           SVR1_real(idx) = init_online_svr();
+           SVR1_imag(idx) = init_online_svr();
+           SVR2_real(idx) = init_online_svr();
+           SVR2_imag(idx) = init_online_svr();
+           TrainingSetIn=((1:pre_train_num)/period).';
+           TrainingSetOut_real1 = real(pre_h1_est(idx,:).');
+           TrainingSetOut_imag1 = imag(pre_h1_est(idx,:).');
+           TrainingSetOut_real2 = real(pre_h2_est(idx,:).');
+           TrainingSetOut_imag2 = imag(pre_h2_est(idx,:).');
+           % pre-Training
+           SVR1_real(idx) = Train(SVR1_real(idx), TrainingSetIn,TrainingSetOut_real1);
+           SVR1_imag(idx) = Train(SVR1_imag(idx), TrainingSetIn,TrainingSetOut_imag1);
+           SVR2_real(idx) = Train(SVR2_real(idx), TrainingSetIn,TrainingSetOut_real2);
+           SVR2_imag(idx) = Train(SVR2_imag(idx), TrainingSetIn,TrainingSetOut_imag2);
+       end
+   end
+   
+   %导频块时域信道估计
+   h1_est=zeros(Ng,Np);
+   h2_est=zeros(Ng,Np);
+   for idx=1:Np
+       tmp_pilot=rx_pilot_rcp(:,idx);
+       tmp=[];
+       for iter=1:Ng
+           tmp=[tmp; tmp_pilot(iter:iter+pilot_len-1).'];
+       end
+       tmp1=tmp*conj(pilot_symbols1);
+       tmp2=tmp*conj(pilot_symbols2);
+       h1_est(:,idx)=tmp1;
+       h2_est(:,idx)=tmp2;
+   end
+   h1_est=h1_est/pilot_len;
+   h2_est=h2_est/pilot_len;
+   %fft dim=1,按列进行fft，dim=2,按行进行fft
+   if flag==0%不插值
+       tmp_H1_est=fft(h1_est,Nfft,1);
+       H1_est=kron(tmp_H1_est,ones(1,Nps));
+       tmp_H2_est=fft(h2_est,Nfft,1);
+       H2_est=kron(tmp_H2_est,ones(1,Nps));
+   end
+   if flag==1%spline插值
+       index=1:all_blocks;
+       inter_h1=zeros(Ng,frame_num);
+       inter_h2=zeros(Ng,frame_num);
+       for idx=1:Ng
+           inter_h1(idx,:)=interp1(pilot_loc,h1_est(idx,:),data_loc,'spline');
+           inter_h2(idx,:)=interp1(pilot_loc,h2_est(idx,:),data_loc,'spline');
+       end
+       H1_est=fft(inter_h1,Nfft,1);
+       H2_est=fft(inter_h2,Nfft,1);
+   end
+   if flag==2%机器学习插值算法
+       predicth1=zeros(Ng,frame_num);
+       predicth2=zeros(Ng,frame_num);
+       
+       for idx=1:Ng %(每条多径,所有时刻)
+           OnlineTrainingSetIn=1/period;
+           PredictedOut1_real=[];
+           PredictedOut1_imag=[];
+           PredictedOut2_real=[];
+           PredictedOut2_imag=[];
+           for idx2=1:Np %(每个时刻)
+               %一个符号在线训练
+               OnlineTrainingSetOut_real1=real(h1_est(idx,idx2));
+               OnlineTrainingSetOut_imag1=imag(h1_est(idx,idx2));
+               OnlineTrainingSetOut_real2=real(h2_est(idx,idx2));
+               OnlineTrainingSetOut_imag2=imag(h2_est(idx,idx2));
+               SVR1_real(idx) = Train(SVR1_real(idx), OnlineTrainingSetIn,OnlineTrainingSetOut_real1);
+               SVR1_imag(idx) = Train(SVR1_imag(idx), OnlineTrainingSetIn,OnlineTrainingSetOut_imag1);
+               SVR2_real(idx) = Train(SVR2_real(idx), OnlineTrainingSetIn,OnlineTrainingSetOut_real2);
+               SVR2_imag(idx) = Train(SVR2_imag(idx), OnlineTrainingSetIn,OnlineTrainingSetOut_imag2);
+               %在线预测
+               TestSetIn=((1:Nps)/period).';
+               PredictedOut1_real = [PredictedOut1_real;Predict(SVR1_real(idx), TestSetIn)];
+               PredictedOut1_imag = [PredictedOut1_imag;Predict(SVR1_imag(idx), TestSetIn)];
+               PredictedOut2_real = [PredictedOut2_real;Predict(SVR2_real(idx), TestSetIn)];
+               PredictedOut2_imag = [PredictedOut2_imag;Predict(SVR2_imag(idx), TestSetIn)];
+           end
+           PredictedOut1_real=PredictedOut1_real.';
+           PredictedOut1_imag=PredictedOut1_imag.';
+           PredictedOut2_real=PredictedOut2_real.';
+           PredictedOut2_imag=PredictedOut2_imag.';
+           predicth1(idx,:)=PredictedOut1_real+1j*PredictedOut1_imag;
+           predicth2(idx,:)=PredictedOut2_real+1j*PredictedOut2_imag;
+       end
+       H1_est=fft(predicth1,Nfft,1);
+       H2_est=fft(predicth2,Nfft,1);
+   end
+%    figure(4)
+%    plot( Rx_rcp,'r*');
+%    xlabel('real')
+%    ylabel('image')
+%    title('接收频域信号星座图');
+   %decode
+%    H1=h1(Ng+1:end,:);
+%    H2=h2(Ng+1:end,:);
+   %LS 
+%    [H1_est,H2_est,Data]=chan_est_block(Rx,interval,pilot_symbols,Nps);
+%    h1_est=ifft(H1_est,Nfft,1);
+%    h2_est=ifft(H2_est,Nfft,1);
+%    H1_est=fft(h1_est(1:2,:),Nfft,1);
+%    H2_est=fft(h2_est(1:2,:),Nfft,1);
+   
+   rx_data=sc_stbc_decode(H1_est,H2_est,Rx,SNR,2);
+   rx_data=ifft(rx_data,Nfft,1);
+   %P->S
+   Rx_data=rx_data(:);
+   % 对所有解码后的符号进行qpsk解调
+   demod_bit=step(hDemod,Rx_data);
+   nbits_error=0;
+   len=min(length(demod_bit),length(msgint));
+   nbits_error=nbits_error+sum(xor(demod_bit(1:len),msgint(1:len)));
+   ber=nbits_error/len;
+   BERs(i)=ber;
+end
+figure(1), clf, semilogy(SNRs,BERs);
+xlabel('Eb/N0(dB)');
+ylabel('BER');
+title('BER for QPSK modulation with Alamouti STBC (Rayleigh channel)');
+figure(2)
+plot(Rx_data,'r*');
+xlabel('real')
+ylabel('image')
+title('解码信号星座图');
+
+% save('stbc_ber_MQ.mat','BERs');
+% ifft_h1=ifft(H1_est,Nfft,1);
+% ifft_h2=ifft(H2_est,Nfft,1);
+% filename='G:\matlab_code\sc_fde_2x1_add_signal.dat';
+% v1 = write_complex_binary (tx1(:)+tx2(:), filename);
