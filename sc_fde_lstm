@@ -1,0 +1,276 @@
+import torch
+from torch import nn
+from torch.autograd import Variable
+import scipy.fftpack as fftpack
+import scipy.io as sio
+import numpy as np
+np.set_printoptions(threshold=np.inf)
+import matplotlib.pyplot as plt
+
+
+#定义RNN模型
+class Rnn_lstm(nn.Module):
+    def __init__(self,INPUT_SIZE,HIDDEN_SIZE,OUTPUT_SIZE,NUM_LAYERS):
+        super(Rnn_lstm, self).__init__()
+        self.rnn_lstm=nn.LSTM(input_size=INPUT_SIZE,hidden_size=HIDDEN_SIZE,num_layers=NUM_LAYERS,batch_first=True)
+        self.out=nn.Linear(HIDDEN_SIZE,OUTPUT_SIZE)#linear是线性变换层,指定网络输入、输出维度
+        self.hidden_size=HIDDEN_SIZE
+        self.num_layers=NUM_LAYERS
+        self.count=0
+    #foreard定义了模型的输入和输出和数据在模型中的流动方向
+
+
+
+    def forward(self,x, h_state,c_state):
+        if self.count==0:
+            #h_state=torch.zeros(self.num_layers,1,self.hidden_size)
+            #c_state = torch.zeros(self.num_layers, 1, self.hidden_size)
+            h_state=torch.rand(self.num_layers,1,self.hidden_size)
+            c_state = torch.rand(self.num_layers,1,self.hidden_size)
+            self.count=1
+        r_out, (h_state ,c_state)= self.rnn_lstm(x, (h_state,c_state))
+        outs = []
+        for time in range(r_out.size(1)):
+            outs.append(self.out(r_out[:, time, :]))
+        return torch.stack(outs, dim=1), (h_state,c_state)
+
+
+def read_data():
+    h2_est_r=[]
+    tx_data_i=[]
+    rx_data_r_time=[]
+    rx_data_i_time=[]
+    rx_data_r_fre = []
+    rx_data_i_fre = []
+    with open('sc_fde_all_rx_data2_r(time).txt', 'r') as f_h1_est_r_time:
+        line = f_h1_est_r_time.readline()
+        line = line[:-1]
+        while line:
+            rx_data_r_time.append(line)
+            line = f_h1_est_r_time.readline()
+            line = line[:-1]
+    with open('sc_fde_all_rx_data2_i(time).txt', 'r') as f_h1_est_i_time:
+        line = f_h1_est_i_time.readline()
+        line = line[:-1]
+        while line:
+            rx_data_i_time.append(line)
+            line = f_h1_est_i_time.readline()
+            line = line[:-1]
+    with open('sc_fde_all_rx_data2_r(fre).txt', 'r') as f_h1_est_r_fre:
+        line = f_h1_est_r_fre.readline()
+        line = line[:-1]
+        while line:
+            rx_data_r_fre.append(line)
+            line = f_h1_est_r_fre.readline()
+            line = line[:-1]
+    with open('sc_fde_all_rx_data2_i(fre).txt', 'r') as f_h1_est_i_fre:
+        line = f_h1_est_i_fre.readline()
+        line = line[:-1]
+        while line:
+            rx_data_i_fre.append(line)
+            line = f_h1_est_i_fre.readline()
+            line = line[:-1]
+    with open('sc_fde_all_h2_est_r.txt', 'r') as f_h2_est_r:
+        line = f_h2_est_r.readline()
+        line = line[:-1]
+        while line:
+            h2_est_r.append(line)
+            line = f_h2_est_r.readline()
+            line = line[:-1]
+    with open('sc_fde_all_tx_data_i.txt', 'r') as f_h2_est_i:
+        line = f_h2_est_i.readline()
+        line = line[:-1]
+        while line:
+            tx_data_i.append(line)
+            line = f_h2_est_i.readline()
+            line = line[:-1]
+    rx_data_r_time = np.array(rx_data_r_time).astype(float)
+    rx_data_r_time = np.transpose([rx_data_r_time])
+    rx_data_i_time = np.array(rx_data_i_time).astype(float)
+    rx_data_i_time = np.transpose([rx_data_i_time])
+
+    rx_data_r_fre = np.array(rx_data_r_fre).astype(float)
+    rx_data_r_fre = np.transpose([rx_data_r_fre])
+    rx_data_i_fre = np.array(rx_data_i_fre).astype(float)
+    rx_data_i_fre = np.transpose([rx_data_i_fre])
+
+    h2_est_r = np.array(h2_est_r).astype(float)
+    h2_est_r = np.transpose([h2_est_r])
+    tx_data_i = np.array(tx_data_i).astype(float)
+    tx_data_i = np.transpose([tx_data_i])
+    return  rx_data_r_time,rx_data_i_time,rx_data_r_fre,rx_data_i_fre,h2_est_r,tx_data_i
+
+
+#模型参数
+INPUT_SIZE = 4
+HIDDEN_SIZE = 64*2
+OUTPUT_SIZE = 2
+TIME_STEP = 128
+NUM_LAYERS = 1
+LR = 0.01
+EPOCH=20
+flag=0
+#创建模型
+model1 = Rnn_lstm(INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE,NUM_LAYERS)
+model2 = Rnn_lstm(INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE,NUM_LAYERS)
+#定义优化器和损失函数
+loss_func = nn.MSELoss()
+#loss_func=nn.BCEWithLogitsLoss()
+#optimizer1 = torch.optim.SGD(model1.parameters(), lr=LR, momentum=0.9)
+#optimizer2 = torch.optim.SGD(model2.parameters(), lr=LR, momentum=0.9)
+optimizer1 = torch.optim.Adam(model1.parameters(), lr=LR)
+optimizer2 = torch.optim.Adam(model2.parameters(), lr=LR)
+#读取数据
+Nfft=128
+Ng=80
+block_len=Nfft+Ng
+data_frame_num=100
+data_len=data_frame_num*Nfft
+
+rx_data_r_time,rx_data_i_time,rx_data_r_fre,rx_data_i_fre,h2_est_r,tx_data_i=read_data()
+
+
+#数据预处理
+tx_r=np.reshape(h2_est_r,(Nfft,data_frame_num),order='F')
+tx_i=np.reshape(tx_data_i,(Nfft,data_frame_num),order='F')
+rx__r_time=np.reshape(rx_data_r_time,(Nfft,data_frame_num),order='F')
+rx_i_time=np.reshape(rx_data_i_time,(Nfft,data_frame_num),order='F')
+rx_r_fre=np.reshape(rx_data_r_fre,(Nfft,data_frame_num),order='F')
+rx_i_fre=np.reshape(rx_data_i_fre,(Nfft,data_frame_num),order='F')
+
+train_column_num=90
+
+
+#训练数据输入4
+if flag==0:#频域输入
+    train_in1= np.reshape(rx_r_fre[:,0:train_column_num:2],(-1,1),order='F')
+    train_in2=np.reshape(rx_i_fre[:,0:train_column_num:2],(-1,1),order='F')
+    train_in3=np.reshape(rx_r_fre[:,1:train_column_num:2],(-1,1),order='F')
+    train_in4=np.reshape(rx_i_fre[:,1:train_column_num:2],(-1,1),order='F')
+    x_np=np.concatenate((train_in1,train_in2,train_in3,train_in4),axis=1)
+if flag==1:#时域输入
+    train_in1 = np.reshape(rx__r_time[:, 0:train_column_num:2], (-1, 1), order='F')
+    train_in2 = np.reshape(rx_i_time[:, 0:train_column_num:2], (-1, 1), order='F')
+    train_in3 = np.reshape(rx__r_time[:, 1:train_column_num:2], (-1, 1), order='F')
+    train_in4 = np.reshape(rx_i_time[:, 1:train_column_num:2], (-1, 1), order='F')
+    x_np = np.concatenate((train_in1, train_in2, train_in3, train_in4), axis=1)
+#训练数据输出2
+train_out1=np.reshape(tx_r[:,0:train_column_num:2],(-1,1),order='F')
+train_out2=np.reshape(tx_i[:,0:train_column_num:2],(-1,1),order='F')
+train_out3=np.reshape(tx_r[:,1:train_column_num:2],(-1,1),order='F')
+train_out4=np.reshape(tx_i[:,1:train_column_num:2],(-1,1),order='F')
+y1_np=np.concatenate([train_out1,train_out2],axis=1)
+y2_np=np.concatenate([train_out3,train_out4],axis=1)
+#测试数据输入4
+if flag==0:#频域输入
+    test_in1 = np.reshape(rx_r_fre[:, train_column_num:-1:2], (-1, 1), order='F')
+    test_in2 = np.reshape(rx_i_fre[:, train_column_num:-1:2], (-1, 1), order='F')
+    test_in3 = np.reshape(rx_r_fre[:, train_column_num + 1:data_frame_num:2], (-1, 1), order='F')
+    test_in4 = np.reshape(rx_i_fre[:, train_column_num + 1:data_frame_num:2], (-1, 1), order='F')
+    test_x_np = np.concatenate((test_in1, test_in2, test_in3, test_in4), axis=1)
+if flag==1:#时域输入
+    test_in1 = np.reshape(rx__r_time[:, train_column_num:-1:2], (-1, 1), order='F')
+    test_in2 = np.reshape(rx_i_time[:, train_column_num:-1:2], (-1, 1), order='F')
+    test_in3 = np.reshape(rx__r_time[:, train_column_num + 1:data_frame_num:2], (-1, 1), order='F')
+    test_in4 = np.reshape(rx_i_time[:, train_column_num + 1:data_frame_num:2], (-1, 1), order='F')
+    test_x_np = np.concatenate((test_in1, test_in2, test_in3, test_in4), axis=1)
+#测试结果对比
+tmp_tx=tx_r[:,train_column_num:data_frame_num]
+out_r = np.reshape(tmp_tx,(-1,1),order='F')
+tmp_tx=tx_i[:,train_column_num:data_frame_num]
+out_i = np.reshape(tmp_tx,(-1,1),order='F')
+
+h_state1 = None # 第一次的时候，暂存为0，初次传入RNN的隐藏层状态
+h_state2=None
+c_state1 = None
+c_state2 = None
+for epoch in range(EPOCH):
+    #模型训练
+    for idx in range(0,int(train_column_num*Nfft/2),TIME_STEP):
+        tmp_x_np=x_np[idx:idx+TIME_STEP,:]
+        x = Variable(torch.Tensor(tmp_x_np).type(torch.FloatTensor))
+        x=x.view(1,TIME_STEP,4)
+        tmp_y1_np=y1_np[idx:idx+TIME_STEP,:]
+        y1=Variable(torch.Tensor(tmp_y1_np).type(torch.FloatTensor))
+        y1=y1.view(1,TIME_STEP,2)
+        tmp_y2_np = y2_np[idx:idx+TIME_STEP, :]
+        y2 = Variable(torch.Tensor(tmp_y2_np).type(torch.FloatTensor))
+        y2 = y2.view(1, TIME_STEP, 2)
+        prediction1, (h_state1,c_state1) = model1(x,h_state1,c_state1)
+        h_state1 = h_state1.data
+        c_state1 = c_state1.data
+        loss1 = loss_func(prediction1, y1)
+        optimizer1.zero_grad()
+        loss1.backward()
+        optimizer1.step()
+        prediction2, (h_state2,c_state2) = model2(x,h_state2,c_state2)
+        h_state2 = h_state2.data
+        c_state2=c_state2.data
+        loss2 = loss_func(prediction2, y2)
+        optimizer2.zero_grad()
+        loss2.backward()
+        optimizer2.step()
+        print('Epoch: ', epoch, '|idx:',idx, '| train loss1: %.4f' % loss1, '| train loss2: %.4f' % loss2)
+
+
+    #模型测试
+    model1_out_r=[]
+    model1_out_i=[]
+    model2_out_r=[]
+    model2_out_i=[]
+    test_len = int((data_frame_num - train_column_num) * Nfft / 2)
+    if flag==0:
+        print('frequency')
+    for idx in range(0,test_len,TIME_STEP):
+        tmp_test_x=test_x_np[idx:idx+TIME_STEP,:]
+        test_in=Variable(torch.Tensor(tmp_test_x).type(torch.FloatTensor))
+        test_in=test_in.view(1,TIME_STEP,4)
+        test_out1, (h_state1,c_state1)= model1(test_in,h_state1,c_state2)
+        h_state1=h_state1.data
+        c_state1=c_state1.data
+        tmp_out=test_out1.data.numpy()
+        model1_out_r.append(np.reshape(tmp_out[0,:,0],(1,-1)))
+        model1_out_i.append(np.reshape(tmp_out[0, :, 1], (1, -1)))
+        test_out2, (h_state2,c_state2) = model2(test_in,h_state2,c_state2)
+        h_state2=h_state2.data
+        c_state2=c_state2.data
+        tmp_out = test_out2.data.numpy()
+        model2_out_r.append(np.reshape(tmp_out[0,:,0],(1,-1)))
+        model2_out_i.append(np.reshape(tmp_out[0, :, 1], (1, -1)))
+    model_out_r=np.zeros(test_len*2)+1j*np.zeros(test_len*2)
+    model_out_r[0:test_len*2:2]=np.reshape(np.array(model1_out_r),(1,-1))
+    model_out_r[1:test_len*2:2] = np.reshape(np.array(model2_out_r),(1,-1))
+    model_out_r=np.transpose([model_out_r])
+    model_out_i = np.zeros(test_len * 2) + 1j * np.zeros(test_len * 2)
+    model_out_i[0:test_len * 2:2] = np.reshape(np.array(model1_out_i), (1, -1))
+    model_out_i[1:test_len * 2:2] = np.reshape(np.array(model2_out_i), (1, -1))
+    model_out_i = np.transpose([model_out_i])
+    tmp_model_out_r=np.array(model_out_r>0).astype(int)#bool转换为数值
+    final_model_out_r=tmp_model_out_r*2-1
+    tmp_model_out_i = np.array(model_out_i > 0).astype(int)  # bool转换为数值
+    final_model_out_i= tmp_model_out_i * 2 - 1
+
+    tmp_out_r = np.array(out_r > 0).astype(int)
+    final_out_r = tmp_out_r * 2 - 1
+    tmp_out_i = np.array(out_i > 0).astype(int)
+    final_out_i = tmp_out_i * 2 - 1
+    correct = 0
+    for idx in range(len(final_out_r)):
+        if (final_out_r[idx] == final_model_out_r[idx]) and (final_model_out_i[idx] == final_out_i[idx]):
+            correct += 1
+    error = len(final_out_r) - correct
+    ber = error * 1.0 / len(final_out_r)
+    print('all bits=', len(final_out_r), '|error bits=', error, '| ber=', ber)
+
+
+plt.figure(1)
+plt.plot(model_out_r, model_out_i, '*')
+plt.title('alamouti decode constellation')
+plt.xlabel('real')
+plt.ylabel('imag')
+plt.figure(2)
+plt.plot(rx__r_time,rx_i_time, '*')
+plt.title('RNN input constellation')
+plt.xlabel('real')
+plt.ylabel('imag')
+plt.show()
