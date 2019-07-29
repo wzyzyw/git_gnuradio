@@ -1,0 +1,414 @@
+import torch
+from torch import nn
+from torch.autograd import Variable
+from sklearn import preprocessing
+import scipy.io as sio
+import numpy as np
+import pandas as pd
+
+np.set_printoptions(threshold=np.inf)
+import matplotlib.pyplot as plt
+
+
+#定义RNN模型
+class Rnn_lstm(nn.Module):
+    def __init__(self,INPUT_SIZE,HIDDEN_SIZE,OUTPUT_SIZE,NUM_LAYERS,BATCH_SIZE):
+        super(Rnn_lstm, self).__init__()
+        self.rnn_lstm=nn.LSTM(input_size=INPUT_SIZE,hidden_size=HIDDEN_SIZE,num_layers=NUM_LAYERS,batch_first=True)
+        self.out=nn.Linear(HIDDEN_SIZE,OUTPUT_SIZE)#linear是线性变换层,指定网络输入、输出维度
+        self.hidden_size=HIDDEN_SIZE
+        self.num_layers=NUM_LAYERS
+        self.batch_size=BATCH_SIZE
+        self.count=0
+    #foreard定义了模型的输入和输出和数据在模型中的流动方向
+
+    def forward(self,x, h_state,c_state):
+        if self.count==0:
+            #h_state=torch.zeros(self.num_layers,1,self.hidden_size)
+            #c_state = torch.zeros(self.num_layers, 1, self.hidden_size)
+            h_state=torch.rand(self.num_layers,self.batch_size,self.hidden_size)
+            c_state = torch.rand(self.num_layers,self.batch_size,self.hidden_size)
+            self.count=1
+        r_out, (h_state ,c_state)= self.rnn_lstm(x, (h_state,c_state))
+        outs = self.out(h_state[self.num_layers-1,:,:])
+        return outs, (h_state,c_state)
+
+
+def read_data():
+    h2_est_r1 = []
+    h2_est_i1 = []
+    h1_est_r1 = []
+    h1_est_i1 = []
+
+    h2_est_r2 = []
+    h2_est_i2 = []
+    h1_est_r2 = []
+    h1_est_i2 = []
+
+    Rx_r=[]
+    Rx_i=[]
+    tx_r=[]
+    with open('sc_fde_h1_est_r1.txt', 'r') as f_h1_est_r:
+        line = f_h1_est_r.readline()
+        line = line[:-1]
+        while line:
+            h1_est_r1.append(line)
+            line = f_h1_est_r.readline()
+            line = line[:-1]
+    with open('sc_fde_h1_est_r2.txt', 'r') as f_h1_est_r:
+        line = f_h1_est_r.readline()
+        line = line[:-1]
+        while line:
+            h1_est_r2.append(line)
+            line = f_h1_est_r.readline()
+            line = line[:-1]
+    with open('sc_fde_h1_est_i1.txt', 'r') as f_h1_est_i:
+        line = f_h1_est_i.readline()
+        line = line[:-1]
+        while line:
+            h1_est_i1.append(line)
+            line = f_h1_est_i.readline()
+            line = line[:-1]
+    with open('sc_fde_h1_est_i2.txt', 'r') as f_h1_est_i:
+        line = f_h1_est_i.readline()
+        line = line[:-1]
+        while line:
+            h1_est_i2.append(line)
+            line = f_h1_est_i.readline()
+            line = line[:-1]
+    with open('sc_fde_h2_est_r1.txt', 'r') as f_h2_est_r:
+        line = f_h2_est_r.readline()
+        line = line[:-1]
+        while line:
+            h2_est_r1.append(line)
+            line = f_h2_est_r.readline()
+            line = line[:-1]
+    with open('sc_fde_h2_est_r2.txt', 'r') as f_h2_est_r:
+        line = f_h2_est_r.readline()
+        line = line[:-1]
+        while line:
+            h2_est_r2.append(line)
+            line = f_h2_est_r.readline()
+            line = line[:-1]
+    with open('sc_fde_h2_est_i1.txt', 'r') as f_h2_est_i:
+        line = f_h2_est_i.readline()
+        line = line[:-1]
+        while line:
+            h2_est_i1.append(line)
+            line = f_h2_est_i.readline()
+            line = line[:-1]
+    with open('sc_fde_h2_est_i2.txt', 'r') as f_h2_est_i:
+        line = f_h2_est_i.readline()
+        line = line[:-1]
+        while line:
+            h2_est_i2.append(line)
+            line = f_h2_est_i.readline()
+            line = line[:-1]
+    with open('sc_fde_Rx_r.txt', 'r') as f_Rx_r:
+        line = f_Rx_r.readline()
+        line = line[:-1]
+        while line:
+            Rx_r.append(line)
+            line = f_Rx_r.readline()
+            line = line[:-1]
+    with open('sc_fde_Rx_i.txt', 'r') as f_Rx_i:
+        line = f_Rx_i.readline()
+        line = line[:-1]
+        while line:
+            Rx_i.append(line)
+            line = f_Rx_i.readline()
+            line = line[:-1]
+    with open('sc_fde_tx.txt', 'r') as f_tx:
+        line = f_tx.readline()
+        line = line[:-1]
+        while line:
+            tx_r.append(line)
+            line = f_tx.readline()
+            line = line[:-1]
+    h1_est_r1 = np.array(h1_est_r1).astype(float)
+    h1_est_r1 = np.transpose([h1_est_r1])
+    h1_est_i1 = np.array(h1_est_i1).astype(float)
+    h1_est_i1 = np.transpose([h1_est_i1])
+    h2_est_r1 = np.array(h2_est_r1).astype(float)
+    h2_est_r1 = np.transpose([h2_est_r1])
+    h2_est_i1 = np.array(h2_est_i1).astype(float)
+    h2_est_i1 = np.transpose([h2_est_i1])
+
+    h1_est_r2 = np.array(h1_est_r2).astype(float)
+    h1_est_r2 = np.transpose([h1_est_r2])
+    h1_est_i2 = np.array(h1_est_i2).astype(float)
+    h1_est_i2 = np.transpose([h1_est_i2])
+    h2_est_r2 = np.array(h2_est_r2).astype(float)
+    h2_est_r2 = np.transpose([h2_est_r2])
+    h2_est_i2 = np.array(h2_est_i2).astype(float)
+    h2_est_i2 = np.transpose([h2_est_i2])
+
+    Rx_r = np.array(Rx_r).astype(float)
+    Rx_r = np.transpose([Rx_r])
+    Rx_i = np.array(Rx_i).astype(float)
+    Rx_i = np.transpose([Rx_i])
+    tx_r = np.array(tx_r).astype(float)
+    tx_r = np.transpose([tx_r])
+    return h1_est_r1, h1_est_i1, h2_est_r1, h2_est_i1,h1_est_r2, h1_est_i2, h2_est_r2, h2_est_i2,Rx_r,Rx_i,tx_r
+
+
+def transform_data(data,time_step):
+
+    df=pd.DataFrame(data)
+    df.columns=['t']
+    for idx in range(time_step):
+        tmp_df = df['t']
+        new_columns=tmp_df.shift(idx+1)
+        df.insert(idx+1,'t'+'-'+str(idx+1),new_columns)
+    #print(df)
+    return df
+def shift_array(my_array,my_data):
+    array_len=my_array.shape[1]
+    tmp=np.zeros(((1,array_len)))
+    for idx in range(1,array_len):
+        tmp[0,idx]=my_array[0,idx-1]
+    tmp[0,0]=my_data
+    return tmp
+
+#模型参数
+INPUT_SIZE = 2
+HIDDEN_SIZE = 16
+OUTPUT_SIZE = 2
+TIME_STEP = 2
+NUM_LAYERS = 1
+batch_size=1
+LR = 0.01
+EPOCH=1
+
+#创建模型
+model1 = Rnn_lstm(INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE,NUM_LAYERS,batch_size)
+model2 = Rnn_lstm(INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE,NUM_LAYERS,batch_size)
+#定义优化器和损失函数
+loss_func = nn.MSELoss()
+#loss_func=nn.BCEWithLogitsLoss()
+#optimizer1 = torch.optim.SGD(model1.parameters(), lr=LR, momentum=0.9)
+#optimizer2 = torch.optim.SGD(model2.parameters(), lr=LR, momentum=0.9)
+optimizer1 = torch.optim.Adam(model1.parameters(), lr=LR)
+optimizer2 = torch.optim.Adam(model2.parameters(), lr=LR)
+#读取数据
+frame_num=2000#int(len(h1_est_i)/100)
+train_num=200
+h1_est_r1, h1_est_i1, h2_est_r1, h2_est_i1,h1_est_r2, h1_est_i2, h2_est_r2, h2_est_i2,Rx_r,Rx_i,tx_r=read_data()
+#h1_est_i=h1_est_i[200:frame_num]
+#数据预处理
+#归一化
+"""
+h1_est_r=preprocessing.maxabs_scale(h1_est_r)
+h1_est_i=preprocessing.maxabs_scale(h1_est_i)
+h2_est_r=preprocessing.maxabs_scale(h2_est_r)
+h2_est_i=preprocessing.maxabs_scale(h2_est_i)
+"""
+
+
+h1_r1_df=transform_data(h1_est_r1,TIME_STEP)
+h1_i1_df=transform_data(h1_est_i1,TIME_STEP)
+h2_r1_df=transform_data(h2_est_r1,TIME_STEP)
+h2_i1_df=transform_data(h2_est_i1,TIME_STEP)
+h1_r2_df=transform_data(h1_est_r2,TIME_STEP)
+h1_i2_df=transform_data(h1_est_i2,TIME_STEP)
+h2_r2_df=transform_data(h2_est_r2,TIME_STEP)
+h2_i2_df=transform_data(h2_est_i2,TIME_STEP)
+
+h1_r1=h1_r1_df.values
+h1_i1=h1_i1_df.values
+h2_r1=h2_r1_df.values
+h2_i1=h2_i1_df.values
+
+h1_r2=h1_r2_df.values
+h1_i2=h1_i2_df.values
+h2_r2=h2_r2_df.values
+h2_i2=h2_i2_df.values
+#训练数据输入
+train_x_np1=h1_r1[TIME_STEP:train_num,1:TIME_STEP+1]
+train_x_np2=h1_i1[TIME_STEP:train_num,1:TIME_STEP+1]
+train_len=len(train_x_np1[:,0])
+train_in_np=np.zeros((train_len,TIME_STEP,INPUT_SIZE))
+train_in_np[:,:,0]=train_x_np1
+train_in_np[:,:,1]=train_x_np2
+
+tmp_train_in=Variable(torch.Tensor(train_in_np).type(torch.FloatTensor))
+train_in=tmp_train_in.view(train_len,TIME_STEP,INPUT_SIZE)
+
+
+#x_np1=np.concatenate((train_in1_r,train_in2,train_in1_i,train_in4),axis=1)
+"""
+    x_np1 = np.concatenate((train_in1_r, train_in1_i), axis=1)
+    x_np2 = np.concatenate((train_in2_r, train_in2_i), axis=1)
+"""
+#训练数据输出2
+train_y_np1=h1_r1[TIME_STEP:train_num,0:1]
+train_y_np2=h1_i1[TIME_STEP:train_num,0:1]
+train_out_np=np.zeros((train_len,OUTPUT_SIZE))
+train_out_np[:,0:1]=train_y_np1
+train_out_np[:,1:2]=train_y_np2
+
+tmp_train_out=Variable(torch.Tensor(train_out_np).type(torch.FloatTensor))
+train_out=tmp_train_out.view(train_len,OUTPUT_SIZE)
+#测试数据输入4
+
+#测试数据输出
+test_num=frame_num-train_num
+test_y_np1=h1_r1[train_num:frame_num,0:1]
+test_y_np2=h1_i1[train_num:frame_num,0:1]
+test_out_np=np.zeros((test_num,OUTPUT_SIZE))
+test_out_np[:,0:1]=test_y_np1
+test_out_np[:,1:2]=test_y_np2
+tmp_test_out=Variable(torch.Tensor(test_out_np).type(torch.FloatTensor))
+test_out=tmp_test_out.view(test_num,OUTPUT_SIZE)
+
+h_state1 = None # 第一次的时候，暂存为0，初次传入RNN的隐藏层状态
+h_state2=None
+c_state1 = None
+c_state2 = None
+for epoch in range(EPOCH):
+    #模型训练
+    train__model_out2 = []
+    train__model_out1=[]
+    for idx in range(0,int(train_len),batch_size):
+
+        x = train_in[idx:idx+batch_size,:,:]
+        y1=train_out[idx:idx+batch_size,:]
+
+        prediction1, (h_state1,c_state1) = model1(x,h_state1,c_state1)
+        h_state1 = h_state1.data
+        c_state1 = c_state1.data
+        loss1 = loss_func(prediction1, y1)
+        tmp_train__model_out= prediction1.data.numpy()
+        tmp_train__model_out1 = tmp_train__model_out[:,0]
+        tmp_train__model_out2 = tmp_train__model_out[:,1]
+        optimizer1.zero_grad()
+        loss1.backward()
+        optimizer1.step()
+        train__model_out1.append(np.reshape(tmp_train__model_out1, (1, -1)))
+        train__model_out2.append(np.reshape(tmp_train__model_out2, (1, -1)))
+        print('Epoch: ', epoch, '|idx:',idx, '| train loss1: %.4f' % loss1)
+
+
+    #模型测试
+    prediction1_r=[]
+    prediction1_i=[]
+    prediction2_r=[]
+    prediction2_i=[]
+
+    time_h1_r1=np.zeros((TIME_STEP,1))
+    time_h1_i1 = np.zeros((TIME_STEP, 1))
+    for idx in range(TIME_STEP):
+        time_h1_r1[idx,0]=train_y_np1[train_num-TIME_STEP-idx-1,0]
+        time_h1_i1[idx,0] = train_y_np2[train_num-TIME_STEP-idx-1,0]
+    time_h1_r1=np.reshape(time_h1_r1,(1,-1),order='F')
+    time_h1_i1 = np.reshape(time_h1_i1, (1, -1), order='F')
+    test__model_out2 = []
+    test__model_out1 = []
+    for idx in range(test_num):
+        test_in_np=np.zeros((1,TIME_STEP,INPUT_SIZE))
+        # 1表示batch_size
+        test_in_np[:,:,0]=time_h1_r1
+        test_in_np[:,:,1]=time_h1_i1
+        tmp_test_in=Variable(torch.Tensor(test_in_np).type(torch.FloatTensor))
+        test_in=tmp_test_in.view(1, TIME_STEP, INPUT_SIZE)
+        y_test=test_out[idx,:]
+        prediction1, (h_state1, c_state1) = model1(test_in, h_state1, c_state1)
+        h_state1 = h_state1.data
+        c_state1 = c_state1.data
+        loss_test = loss_func(prediction1, y_test)
+        tmp_test__model_out = prediction1.data.numpy()
+        tmp_test__model_out1 = tmp_test__model_out[:, 0]
+        tmp_test__model_out2 = tmp_test__model_out[:, 1]
+        time_h1_r1=shift_array(time_h1_r1, np.reshape(tmp_test__model_out1, (1, -1)))
+        time_h1_i1 = shift_array(time_h1_i1, np.reshape(tmp_test__model_out2, (1, -1)))
+        test__model_out1.append(np.reshape(tmp_test__model_out1, (1, -1)))
+        test__model_out2.append(np.reshape(tmp_test__model_out2, (1, -1)))
+        print('Epoch: ', epoch, '|idx:', idx, '| test loss1: %.4f' % loss_test)
+
+
+
+
+
+
+
+
+
+    """
+        for idx in range(0,test_len,batch_size):
+        tmp_test_x=test_x_np[idx:idx+batch_size,:]
+        test_in=Variable(torch.Tensor(tmp_test_x).type(torch.FloatTensor))
+        test_in=test_in.view(batch_size,TIME_STEP,1)
+
+        tmp_y_np = test_y_np[idx:idx + batch_size]
+        y_test = Variable(torch.Tensor(tmp_y_np).type(torch.FloatTensor))
+        y_test = y_test.view(batch_size, 1)
+
+        model_out1, (h_state1,c_state1)= model1(test_in,h_state1,c_state1)
+        h_state1=h_state1.data
+        c_state1=c_state1.data
+        tmp_test_out1=model_out1.data.numpy()
+        loss_test = loss_func(model_out1, y_test)
+        print('Epoch: ', epoch, '|idx:', idx, '| test loss1: %.4f' % loss_test)
+        prediction1_r.append(np.reshape(tmp_test_out1, (1, -1)))
+    """
+
+    train__model_out1=np.reshape(np.array(train__model_out1), (-1, 1), order='F')
+    train__model_out2 = np.reshape(np.array(train__model_out2), (-1, 1), order='F')
+    test__model_out1 = np.reshape(np.array(test__model_out1), (-1, 1), order='F')
+    test__model_out2 = np.reshape(np.array(test__model_out2), (-1, 1), order='F')
+
+
+
+plt.figure(1)
+plt.plot(train__model_out2, 'b')
+plt.plot(train_y_np2, 'r')
+plt.title('h1_i1')
+label=['prediction','real']
+plt.xlabel('time(n)')
+plt.ylabel(' amplitude')
+plt.legend(label,loc = 0, ncol = 2)
+plt.figure(2)
+plt.plot(train__model_out1, 'b')
+plt.plot(train_y_np1, 'r')
+plt.title('h1_r1')
+label=['prediction','real']
+plt.xlabel('time(n)')
+plt.ylabel(' amplitude')
+plt.legend(label,loc = 0, ncol = 2)
+plt.figure(3)
+plt.plot(test__model_out1, 'b')
+plt.plot(test_y_np1, 'r')
+plt.title('h1_r1')
+label=['prediction','real']
+plt.xlabel('time(n)')
+plt.ylabel(' amplitude')
+plt.legend(label,loc = 0, ncol = 2)
+plt.figure(4)
+plt.plot(test__model_out2, 'b')
+plt.plot(test_y_np2, 'r')
+plt.title('h1_i1')
+label=['prediction','real']
+plt.xlabel('time(n)')
+plt.ylabel(' amplitude')
+plt.legend(label,loc = 0, ncol = 2)
+plt.show()
+
+"""
+plt.figure(1)
+plt.plot(train__model_out1, 'b')
+plt.title('h1_i_train_modle')
+plt.figure(2)
+plt.plot(train_y_np, 'r')
+plt.title('h1_i_train')
+plt.figure(3)
+plt.plot(test_y_np, 'r')
+plt.title('h1_i_test')
+plt.figure(4)
+plt.plot(prediction1_r, 'b')
+plt.title('h1_i_test_model')
+plt.show()
+"""
+
+"""
+使用时间序列预测,stbc解码结果作为新
+"""
